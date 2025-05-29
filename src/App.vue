@@ -3,7 +3,7 @@
 </script>
 
 <template>
-  <div>123</div>
+  <RouterView></RouterView>
 </template>
 
 <style lang="less" scoped>
