@@ -24,6 +24,13 @@ export const useUserStore=defineStore("user",{
             } catch (error) {
                 console.log("登录失败:", error);
             }
+        },
+        logout(){
+           this.token="";
+           this.roles=[];
+           this.username="";
+           this.menu=[];
+           sessionStorage.clear();
         }
     }
 

@@ -5,7 +5,9 @@
         <nav-menu> </nav-menu>
       </el-aside>
       <el-container>
-        <el-header>Header</el-header>
+        <el-header>
+          <top-header class = "top-header"></top-header>
+        </el-header>
         <el-main>
           <RouterView />
         </el-main>
@@ -16,6 +18,7 @@
 
 <script setup lang="ts">
 import NavMenu from '@/components/navMenu/NavMenu.vue';
+import TopHeader from '@/components/topHeader/TopHeader.vue';
 
 
 </script>
@@ -33,5 +36,11 @@ import NavMenu from '@/components/navMenu/NavMenu.vue';
     height: 80vh;
     overflow: auto;
   }
+
+.top-header{
+    height: 100%;
+    width: 100%;
+    background-color: #fff;
+}
 
 </style>
