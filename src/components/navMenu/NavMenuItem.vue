@@ -8,7 +8,7 @@
         </template>
         <nav-menu-item v-for="child in item.children" :key="child.url" :item="child"></nav-menu-item>
     </el-sub-menu>
-    <el-menu-item v-else :index="item.url">
+    <el-menu-item v-else :index="item.url" v-show="!(item.name == '订单详情')">
         <el-icon>
             <component :is="item.icon" />
         </el-icon>
@@ -19,7 +19,7 @@
 <script  lang="ts">
 import { defineComponent } from 'vue';
 import type { PropType } from 'vue';
-import type { MenuItem as MenuItemType } from "@/types/user/index"; //这里换成@符号会有bug，先不换了
+import type { MenuItem as MenuItemType } from "../../types/user"; //这里换成@符号会有bug，先不换了
 export default defineComponent({
     name: 'NavMenuItem', // 你可以给组件起一个名字
     props: {

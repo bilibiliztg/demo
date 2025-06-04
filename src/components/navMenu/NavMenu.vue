@@ -9,6 +9,7 @@
     class="el-menu-vertical-demo"
     default-active="2"
     text-color="#fff"
+    :router="true"
   >
     <nav-menu-item v-for="item in menuList" :key="item.id" :item="item"></nav-menu-item>
   </el-menu>
