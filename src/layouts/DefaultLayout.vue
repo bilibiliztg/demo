@@ -22,7 +22,7 @@ import NavMenu from '@/components/navMenu/NavMenu.vue';
 .el-aside{
     height: 100vh;;
     box-shadow: 10px 0 8px -2px rgba(0, 0, 0, 0.2);
-    background-color: white
+    background-color: #545c64
   }
   .el-header{
     padding: 0 !important

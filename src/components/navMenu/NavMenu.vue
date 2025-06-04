@@ -37,7 +37,7 @@ const menuList = computed(() => {
     margin-left: -10px;
   }
   h1 {
-    color: #333;
+    color: #fff;
     margin-left: 10px;
     font-size: 22px;
   }
