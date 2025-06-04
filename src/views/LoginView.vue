@@ -84,13 +84,7 @@ const submitForm = async (formEl: FormInstance | undefined) => {
       userStore.login(form.value).then(() => { // 登录成功后跳转到首页
         router.push("/")
       });
-    } else {
-      ElNotification({
-        title: 'Error',
-        message: '请输入正确的用户名或密码',
-        type: 'error',
-      })
-    }
+    } 
   })
 }
 </script>
