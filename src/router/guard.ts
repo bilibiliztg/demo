@@ -15,5 +15,15 @@ router.beforeEach((to) => {
     if (to.path === '/login') {
       return { path: '/' } // 阻止导航,让他跳回首页
     }
+    //权限控制
+    if (to.meta?.needAuth && getIntersection(userStore.roles, to.meta.needAuth as string[]).length === 0) {
+      return { path: '/forbidden' } // 阻止导航
+    }
   }
 })
+
+
+function getIntersection<T>(arr1: T[], arr2: T[]): T[] {
+  const set = new Set(arr2);
+  return arr1.filter(item => set.has(item));
+}
