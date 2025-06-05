@@ -1,15 +1,15 @@
 <template>
-    <div class="common-layout">
+  <div class="common-layout">
     <el-container>
       <el-aside width="200px">
         <nav-menu> </nav-menu>
       </el-aside>
       <el-container>
         <el-header>
-          <top-header class = "top-header"></top-header>
+          <top-header class="top-header"></top-header>
         </el-header>
         <el-main>
-          <RouterView />
+          <TabsLayout />
         </el-main>
       </el-container>
     </el-container>
@@ -17,30 +17,31 @@
 </template>
 
 <script setup lang="ts">
-import NavMenu from '@/components/navMenu/NavMenu.vue';
-import TopHeader from '@/components/topHeader/TopHeader.vue';
+import NavMenu from '@/components/navMenu/NavMenu.vue'
+import TopHeader from '@/components/topHeader/TopHeader.vue'
+import TabsLayout from '@/layouts/TabsLayout.vue'
+
 
 
 </script>
 
 <style scoped lang="less">
-.el-aside{
-    height: 100vh;;
-    box-shadow: 10px 0 8px -2px rgba(0, 0, 0, 0.2);
-    background-color: #545c64
-  }
-  .el-header{
-    padding: 0 !important
-  }
-  .el-main{
-    height: 80vh;
-    overflow: auto;
-  }
-
-.top-header{
-    height: 100%;
-    width: 100%;
-    background-color: #fff;
+.el-aside {
+  height: 100vh;
+  box-shadow: 10px 0 8px -2px rgba(0, 0, 0, 0.2);
+  background-color: #545c64;
+}
+.el-header {
+  padding: 0 !important;
+}
+.el-main {
+  height: 80vh;
+  overflow: auto;
 }
 
+.top-header {
+  height: 100%;
+  width: 100%;
+  background-color: #fff;
+}
 </style>

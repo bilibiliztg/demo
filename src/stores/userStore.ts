@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
 import {login} from "@/api/loginApi"
 import type {LoginParams} from "@/api/loginApi"
+import type {MenuItem} from "@/types/user"
 
 export const useUserStore=defineStore("user",{
     state:()=>({
@@ -31,6 +32,20 @@ export const useUserStore=defineStore("user",{
            this.username="";
            this.menu=[];
            sessionStorage.clear();
+        },
+        //递归遍历菜单列表找到对应的菜单项
+        getMenuByUrl(url:string,menuList:MenuItem[]): MenuItem | undefined {
+            for(const item of menuList){
+                if(item.url===url){
+                    return item;
+                }else if(item.children){
+                    const result=this.getMenuByUrl(url,item.children);
+                    if(result){
+                        return result;
+                    }
+                }
+            }
+            
         }
     }
 
