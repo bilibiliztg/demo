@@ -153,8 +153,80 @@
             </el-col>
           </div>
         </el-card>
+
+        <el-card class="mt">
+          <template #header>
+            <div class="card-header">
+              <h1>能源统计</h1>
+            </div>
+          </template>
+          <el-row>
+            <el-col :span="8">
+              <div ref="chartGraphRef" class="chart-graph" style="width: 100%; height: 400px"></div>
+            </el-col>
+            <el-col :span="16">
+              <div ref="chartLineRef" class="chart-line" style="width: 100%; height: 400px"></div>
+            </el-col>
+          </el-row>
+        </el-card>
       </el-col>
-      <el-col :span="6"> </el-col>
+      <el-col :span="6">
+        <el-card>
+          <template #header>
+            <div class="card-header">
+              <h1>设备总览</h1>
+            </div>
+          </template>
+          <div ref="leidaRef" style="width: 100%; height: 240px"></div>
+        </el-card>
+
+        <el-card class="mt">
+          <template #header>
+            <h1>营收统计表</h1>
+          </template>
+          <ul class="revenue-list">
+            <li
+              v-for="(item, index) in topCityRankData"
+              :key="index"
+            >
+              <span class="rank">{{ item.rank }}</span>
+              <span class="city">{{ item.city }}</span>
+              <span class="amount">{{ formatNumber(item.amount) }}</span>
+              <span class="percentage">{{ item.percentage }}%</span>
+              <el-icon
+                style="margin-left: 4px"
+                :size="12"
+                :color="item.trend === 'up' ? '#00C48D' : '#FF5C93'"
+              >
+                <component :is="item.trend === 'up' ? 'CaretTop' : 'CaretBottom'" />
+              </el-icon>
+            </li>
+          </ul>
+        </el-card>
+
+        <el-card class="mt">
+          <div class="card-header">
+            <h1>故障报警</h1>
+          </div>
+          <el-timeline>
+            <el-timeline-item timestamp="2025/6/6" placement="top" type="danger">
+              <el-card>
+                <h4>区域入侵</h4>
+              </el-card>
+            </el-timeline-item>
+            <el-timeline-item timestamp="2025/6/6" placement="top" type="warning">
+              <el-card>
+                <h4>陌生人告警</h4>
+              </el-card>
+            </el-timeline-item>
+            <el-timeline-item timestamp="2025/6/6" placement="top" type="info">
+              <el-card>
+                <h4>重点人员告警</h4>
+              </el-card>
+            </el-timeline-item>
+          </el-timeline>
+        </el-card>
+      </el-col>
     </el-row>
   </div>
 </template>
@@ -170,41 +242,241 @@ import total from '@/assets/total.png'
 import money from '@/assets/money.png'
 import daily from '@/assets/daily.png'
 import { onMounted, onUnmounted, ref } from 'vue'
-
+import { useChart } from '@/hooks/useChart'
+import { getLineStatistic, getGraphStatistic, getLeidaGraph, getTopCityRank } from '@/api/dashboard'
 
 // 定义响应式变量存储当前时间
-const currentTime = ref('');
-let timer: number | null = null;
+const currentTime = ref('')
+let timer: number | null = null
+
+// 电量统计折线图
+const chartLineRef = ref(null)
+const setChartData = async () => {
+  const chartOptions = ref({
+    title: {
+      text: '电量统计',
+      left: 'left top',
+    },
+    tooltip: {
+      trigger: 'axis',
+      formatter: function (params) {
+        if (!params || params.length === 0) return ''
+        // 先添加第一个数据项的名称并换行
+        let result = params[0].name + '<br/>'
+        // 遍历 params 数组，拼接每个数据项的系列名称和值
+        params.forEach((item) => {
+          result += item.seriesName + ': ' + item.value
+          if (item.seriesName === '充电量') {
+            result += 'KW<br/>'
+          } else if (item.seriesName === '充电时长') {
+            result += 'h<br/>'
+          } else if (item.seriesName === '充电功率') {
+            result += 'KW/h<br/>'
+          }
+        })
+        return result
+      },
+    },
+    legend: {
+      data: ['充电量', '充电时长', '充电功率'],
+      textStyle: {
+        color: '#333',
+      },
+    },
+    xAxis: {
+      type: 'category',
+      data: ['13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00', '21:00'],
+      boundaryGap: false,
+    },
+    yAxis: {
+      type: 'value',
+      axisLabel: {
+        formatter: '{value} KW',
+      },
+    },
+    series: [
+      {
+        name: '充电量',
+        type: 'line',
+        data: [20, 50, 30, 70, 60, 80, 40, 60, 50],
+        itemStyle: {
+          color: 'purple',
+          shadowColor: 'rgba(0, 0, 255, 0.5)',
+          shadowBlur: 10,
+        },
+        lineStyle: {
+          width: 4,
+        },
+        smooth: true,
+      },
+      {
+        name: '充电时长',
+        type: 'line',
+        data: [30, 40, 60, 50, 70, 20, 30, 40, 60],
+        itemStyle: {
+          color: 'lightgreen',
+          shadowColor: 'rgba(0, 255, 0, 0.5)',
+          shadowBlur: 10,
+        },
+        lineStyle: {
+          width: 4,
+        },
+        smooth: true,
+      },
+      {
+        name: '充电功率',
+        type: 'line',
+        data: [30, 40, 60, 50, 70, 20, 30, 40, 60],
+        itemStyle: {
+          color: 'skyblue',
+          shadowColor: 'rgba(173, 216, 230, 0.5)',
+          shadowBlur: 10,
+        },
+        lineStyle: {
+          width: 4,
+        },
+        smooth: true,
+      },
+    ],
+  })
+  const res = await getLineStatistic()
+  for (let i = 0; i < res.data.list.length; i++) {
+    chartOptions.value.series[i].name = res.data.list[i].name
+    chartOptions.value.series[i].data = res.data.list[i].data
+  }
+  chartOptions.value.legend.data = res.data.list.map((item) => item.name)
+  return chartOptions
+}
+useChart(chartLineRef, setChartData)
+
+//能源统计饼图
+const chartGraphRef = ref(null)
+const setChartGraph = async () => {
+  const options = ref({
+    legend: {
+      top: 'top',
+    },
+
+    tooltip: {
+      trigger: 'item',
+      formatter: '{a} <br/>{b}: {c} %',
+    },
+    series: [
+      {
+        name: '营收占比',
+        type: 'pie',
+        radius: ['50%', '70%'], // 内外半径形成环形
+        center: ['50%', '50%'],
+        roseType: 'area',
+        color: ['#4B6EBD', '#3DBB92', '#53C1D6'], // 颜色
+        label: {
+          show: false,
+        },
+        emphasis: {
+          label: {
+            show: true,
+            fontSize: '16',
+            fontWeight: 'bold',
+          },
+        },
+        data: [
+          { value: 35, name: '充电桩' }, // 数据值和名称
+          { value: 30, name: '充电站' },
+          { value: 25, name: '充电杆' },
+        ],
+      },
+    ],
+    graphic: {
+      type: 'text',
+      left: 'center',
+      top: 'center',
+      style: {
+        text: '营收占比',
+        textAlign: 'center',
+        textVerticalAlign: 'middle',
+        fontSize: 20,
+        fill: '#333',
+      },
+    },
+  })
+  const res = await getGraphStatistic()
+  options.value.series[0].data = res.data.list
+  return options
+}
+useChart(chartGraphRef, setChartGraph)
+
+//雷达图
+const leidaRef = ref(null)
+const setLeidaData = async () => {
+  const chartOptions = ref({
+    radar: {
+      // shape: 'circle',
+      indicator: [
+        { name: '闲置数', max: 65 },
+        { name: '使用数', max: 160 },
+        { name: '故障数', max: 300 },
+        { name: '维修数', max: 380 },
+        { name: '更换数', max: 520 },
+        { name: '报废数', max: 250 },
+      ],
+    },
+    series: [
+      {
+        name: 'Budget vs spending',
+        type: 'radar',
+        data: [
+          {
+            value: [],
+            name: 'Allocated Budget',
+          },
+        ],
+      },
+    ],
+  })
+  const res = await getLeidaGraph()
+  chartOptions.value.series[0].data[0].value = res.data.list
+  return chartOptions
+}
+useChart(leidaRef, setLeidaData)
+
+//排行榜
+const topCityRankData = ref()
+const setTableData = async () => {
+  const res = await getTopCityRank()
+  topCityRankData.value = res.data.list
+  console.log(topCityRankData.value)
+}
+setTableData()
+
+// 格式化数字
+const formatNumber = (num: number) => {
+  return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+}
 
 // 更新时间的函数
 const updateTime = () => {
-  const date = new Date();
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
-  const hours = String(date.getHours()).padStart(2, '0');
-  const minutes = String(date.getMinutes()).padStart(2, '0');
-  const seconds = String(date.getSeconds()).padStart(2, '0');
-  currentTime.value = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
-};
+  const date = new Date()
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+  const hours = String(date.getHours()).padStart(2, '0')
+  const minutes = String(date.getMinutes()).padStart(2, '0')
+  const seconds = String(date.getSeconds()).padStart(2, '0')
+  currentTime.value = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`
+}
 
 // 组件挂载时启动定时器
 onMounted(() => {
-  updateTime();
-  timer = window.setInterval(updateTime, 1000);
-});
+  updateTime()
+  timer = window.setInterval(updateTime, 1000)
+})
 
 // 组件卸载时清除定时器，避免内存泄漏
 onUnmounted(() => {
   if (timer) {
-    window.clearInterval(timer);
+    window.clearInterval(timer)
   }
-});
-
-
-
-
-
+})
 </script>
 
 <style scoped lang="less">
@@ -253,6 +525,59 @@ onUnmounted(() => {
   p {
     margin-top: 10px;
     color: #333;
+  }
+}
+
+.revenue-list {
+  padding: 0;
+  margin: 0;
+
+  li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid #f0f0f0;
+
+    &:nth-child(even) {
+        background-color: rgb(253, 246, 236);
+    }
+
+    &:nth-child(1) .rank {
+      border-radius: 50%;
+      background-color: red;
+    }
+
+    &:nth-child(2) .rank {
+      border-radius: 50%;
+      background-color: orange;
+    }
+
+    &:nth-child(3) .rank {
+      border-radius: 50%;
+      background-color: green;
+    }
+
+    .rank {
+      display: inline-block;
+      font-weight: bold;
+      color: #666;
+      width: 30px;
+      height: 30px;
+      text-align: center;
+      line-height: 30px;
+      margin-right: 10px;
+    }
+
+    .city {
+      flex: 1;
+      margin-right: 20px;
+    }
+
+    .amount,
+    .percentage {
+      margin-right: 10px;
+    }
   }
 }
 </style>
