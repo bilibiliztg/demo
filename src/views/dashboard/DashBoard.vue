@@ -185,10 +185,7 @@
             <h1>营收统计表</h1>
           </template>
           <ul class="revenue-list">
-            <li
-              v-for="(item, index) in topCityRankData"
-              :key="index"
-            >
+            <li v-for="(item, index) in topCityRankData" :key="index">
               <span class="rank">{{ item.rank }}</span>
               <span class="city">{{ item.city }}</span>
               <span class="amount">{{ formatNumber(item.amount) }}</span>
@@ -441,12 +438,10 @@ useChart(leidaRef, setLeidaData)
 
 //排行榜
 const topCityRankData = ref()
-const setTableData = async () => {
+onMounted(async () => {
   const res = await getTopCityRank()
   topCityRankData.value = res.data.list
-  console.log(topCityRankData.value)
-}
-setTableData()
+})
 
 // 格式化数字
 const formatNumber = (num: number) => {
@@ -540,7 +535,7 @@ onUnmounted(() => {
     border-bottom: 1px solid #f0f0f0;
 
     &:nth-child(even) {
-        background-color: rgb(253, 246, 236);
+      background-color: rgb(253, 246, 236);
     }
 
     &:nth-child(1) .rank {
