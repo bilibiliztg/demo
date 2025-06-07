@@ -126,30 +126,30 @@
               <h1>常用功能</h1>
             </div>
           </template>
-          <div class="quick mt mb">
+          <div class="quick mt mb" @click="handleQuickClick">
             <el-col :span="4">
-              <img :src="repair" />
-              <p>设备维修</p>
+              <img :src="money" data-route="/operations/orders" style="cursor: pointer" />
+              <p>订单管理</p>
             </el-col>
             <el-col :span="4">
-              <img :src="daily" />
-              <p>每日日报</p>
-            </el-col>
-            <el-col :span="4">
-              <img :src="progress" />
-              <p>任务进度</p>
-            </el-col>
-            <el-col :span="4">
-              <img :src="total" />
-              <p>营收占比</p>
-            </el-col>
-            <el-col :span="4">
-              <img :src="money" />
+              <img :src="total" data-route="/chargingstation/revenue" style="cursor: pointer" />
               <p>营收统计</p>
             </el-col>
             <el-col :span="4">
-              <img :src="remain" />
-              <p>待办事项</p>
+              <img :src="repair" data-route="/system" style="cursor: pointer" />
+              <p>系统设置</p>
+            </el-col>
+            <el-col :span="4">
+              <img :src="daily" data-route="/equipment" style="cursor: pointer" />
+              <p>会员卡管理</p>
+            </el-col>
+            <el-col :span="4">
+              <img :src="progress" data-route="/document" style="cursor: pointer" />
+              <p>招商管理</p>
+            </el-col>
+            <el-col :span="4">
+              <img :src="remain" data-route="/alarm" style="cursor: pointer" />
+              <p>报警管理</p>
             </el-col>
           </div>
         </el-card>
@@ -177,7 +177,7 @@
               <h1>设备总览</h1>
             </div>
           </template>
-          <div ref="leidaRef" style="width: 100%; height: 240px"></div>
+          <div ref="leidaRef" style="width: 100%; height: 250px"></div>
         </el-card>
 
         <el-card class="mt">
@@ -241,10 +241,39 @@ import daily from '@/assets/daily.png'
 import { onMounted, onUnmounted, ref } from 'vue'
 import { useChart } from '@/hooks/useChart'
 import { getLineStatistic, getGraphStatistic, getLeidaGraph, getTopCityRank } from '@/api/dashboard'
+import { useRoute, useRouter } from 'vue-router'
+import { useTabsStore } from '@/stores/tabStore'
+import { useUserStore } from '@/stores/userStore'
 
 // 定义响应式变量存储当前时间
 const currentTime = ref('')
 let timer: number | null = null
+
+const router = useRouter()
+const tabsStore = useTabsStore()
+const userStore = useUserStore()
+//常用功能路由跳转
+const handleQuickClick = (event: MouseEvent) => {
+  // 获取点击的目标元素
+  let target = event.target as HTMLElement
+  // 向上查找带有 data-route 属性的 img 元素
+  while (target && target !== event.currentTarget) {
+    if (target.tagName === 'IMG' && target.hasAttribute('data-route')) {
+      const routeKey = target.getAttribute('data-route') as string
+      if (routeKey) {
+        const currentMenu = userStore.getMenuByUrl(routeKey, userStore.menu)
+        if (currentMenu) {
+          tabsStore.addTab(currentMenu)
+        }
+        router.push({ path: routeKey })
+      } else {
+        console.warn(`未找到 ${routeKey} 对应的路由`)
+      }
+      break
+    }
+    target = target.parentElement as HTMLElement
+  }
+}
 
 // 电量统计折线图
 const chartLineRef = ref(null)
@@ -416,6 +445,18 @@ const setLeidaData = async () => {
         { name: '更换数', max: 520 },
         { name: '报废数', max: 250 },
       ],
+    },
+    tooltip: {
+      trigger: 'axis',
+      // 自定义提示框内容
+      formatter: function (params) {
+        if (!params || params.length === 0) return ''
+        let result = `${params[0].seriesName}<br/>`
+        params.forEach((item) => {
+          result += `${item.axisValue}: ${item.value}<br/>`
+        })
+        return result
+      },
     },
     series: [
       {
