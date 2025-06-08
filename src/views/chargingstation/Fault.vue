@@ -1,7 +1,7 @@
 <template>
     <div class="fault-container">
         <el-card>
-            <el-select v-model="select" style="width: 300px" placeholder="选择站点名称" clearable>
+            <el-select v-model="select" style="width: 300px" placeholder="选择站点名称" filterable clearable>
                 <el-option v-for="item in sourceDataList" :key="item.id" :label="item.name" :value="item.id" />
             </el-select>
         </el-card>
