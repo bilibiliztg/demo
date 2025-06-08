@@ -30,7 +30,7 @@ const userStore = useUserStore()
 const content = ref<string[]>([])
 
 onMounted(() => {
-  content.value = [userStore.username]
+  content.value = []
 })
 
 </script>
