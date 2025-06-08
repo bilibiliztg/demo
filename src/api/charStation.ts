@@ -35,6 +35,7 @@ enum Api {
   DELETE_CHAR_STATION_RECORD = '/charStation/delete',
   REVENUE_CHART = '/revenueChart',
   REVENUE_LIST = '/revenueList',
+  CHAR_STATION_LIST = '/currentList',
 }
 
 function pageCharStationRecord(data: CharStationRecordReq) {
@@ -58,6 +59,9 @@ function getRevenueChartData() {
 function pageRevenueListData(data: any) {
   return post(Api.REVENUE_LIST, data)
 }
+function getCharStationListData(data: any) {
+  return post(Api.CHAR_STATION_LIST)
+}
 
 export type { PageCommonResp, CharStationRecord, CharStationRecordReq }
-export { pageCharStationRecord, updateCharStationRecord, addCharStationRecord, deleteCharStationRecord, getRevenueChartData, pageRevenueListData }
+export { getCharStationListData, pageCharStationRecord, updateCharStationRecord, addCharStationRecord, deleteCharStationRecord, getRevenueChartData, pageRevenueListData }
