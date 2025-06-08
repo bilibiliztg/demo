@@ -1,4 +1,4 @@
-import { post } from '../utils/http'
+import { post,get  } from '../utils/http'
 
 interface CharStationRecord {
   name: string
@@ -33,6 +33,8 @@ enum Api {
   UPDATE_CHAR_STATION_RECORD = '/charStation/update',
   ADD_CHAR_STATION_RECORD = '/charStation/add',
   DELETE_CHAR_STATION_RECORD = '/charStation/delete',
+  REVENUE_CHART = '/revenueChart',
+  REVENUE_LIST = '/revenueList',
 }
 
 function pageCharStationRecord(data: CharStationRecordReq) {
@@ -50,5 +52,12 @@ function deleteCharStationRecord(data: any) {
   return post(Api.DELETE_CHAR_STATION_RECORD, data)
 }
 
+function getRevenueChartData() {
+  return get(Api.REVENUE_CHART)
+}
+function pageRevenueListData(data: any) {
+  return post(Api.REVENUE_LIST, data)
+}
+
 export type { PageCommonResp, CharStationRecord, CharStationRecordReq }
-export { pageCharStationRecord, updateCharStationRecord, addCharStationRecord, deleteCharStationRecord }
+export { pageCharStationRecord, updateCharStationRecord, addCharStationRecord, deleteCharStationRecord, getRevenueChartData, pageRevenueListData }

@@ -1,5 +1,5 @@
 <template>
-  <el-dialog title="编辑站点信息" :model-value="props.visible">
+  <el-dialog :title="props.title" :model-value="props.visible">
     <el-form :model="ruleForm" label-width="120" :rules="rules" ref="formRef">
       <el-row>
         <el-col :span="12">
@@ -90,7 +90,6 @@ watch(() => props.record, (newVal) => {
   if (newVal) {
     ruleForm.value = { ...newVal }
   } else {
-    console.log('record is null')
     ruleForm.value = { name: '', id: '', city: '', fast: '', slow: '', status: '', now: '', fault: '', person: '', tel: '' }
   }
 }, { immediate: true })

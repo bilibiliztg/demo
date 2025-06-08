@@ -1,7 +1,7 @@
 <template>
   <div class="logo">
     <img :src="logo" width="34px" height="34px" />
-    <h1>动力港</h1>
+    <h1>长乐未央</h1>
   </div>
   <el-menu
     active-text-color="#ffd04b"

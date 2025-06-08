@@ -438,12 +438,12 @@ const setLeidaData = async () => {
     radar: {
       // shape: 'circle',
       indicator: [
-        { name: '闲置数', max: 65 },
-        { name: '使用数', max: 160 },
-        { name: '故障数', max: 300 },
-        { name: '维修数', max: 380 },
-        { name: '更换数', max: 520 },
-        { name: '报废数', max: 250 },
+        { name: '闲置数', max: 65,  alignTicks: false},
+        { name: '使用数', max: 160, alignTicks: false },
+        { name: '故障数', max: 300 , alignTicks: false},
+        { name: '维修数', max: 380 , alignTicks: false},
+        { name: '更换数', max: 520, alignTicks: false },
+        { name: '报废数', max: 250, alignTicks: false },
       ],
     },
     tooltip: {
