@@ -17,6 +17,7 @@ export const useUserStore=defineStore("user",{
                 this.token=token;
                 this.roles=roles;
                 this.menu=menulist;
+                this.username=username;
                 // //既存到pinia中又存到本地存储中是因为第一pinia中数据是响应式第二存取速度要比本地存储快
                 sessionStorage.setItem("token",token);
                 sessionStorage.setItem("roles",JSON.stringify(roles))
