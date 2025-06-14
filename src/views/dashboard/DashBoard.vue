@@ -452,7 +452,7 @@ const setLeidaData = async () => {
       formatter: function (params) {
         if (!params || params.length === 0) return ''
         let result = `${params[0].seriesName}<br/>`
-        params.forEach((item) => {
+        params.forEach((item:any) => {
           result += `${item.axisValue}: ${item.value}<br/>`
         })
         return result

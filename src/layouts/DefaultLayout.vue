@@ -24,9 +24,7 @@ import NavMenu from '@/components/navMenu/NavMenu.vue'
 import TopHeader from '@/components/topHeader/TopHeader.vue'
 import TabsLayout from '@/layouts/TabsLayout.vue'
 import { onMounted, ref } from 'vue'
-import { useUserStore } from '@/stores/userStore'
 
-const userStore = useUserStore()
 const content = ref<string[]>([])
 
 onMounted(() => {
